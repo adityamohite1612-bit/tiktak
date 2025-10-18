@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TikTak Game</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #74ebd5, #9face6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+    }
+
+    h1 {
+      color: #fff;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .cell {
+      background: white;
+      border-radius: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .cell:hover {
+      background: #f0f0f0;
+      transform: scale(1.05);
+    }
+
+    .status {
+      margin-top: 20px;
+      font-size: 1.3rem;
+      color: white;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #4c6ef5;
+      color: white;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #364fc7;
+    }
+
+    @media (max-width: 500px) {
+      .board {
+        grid-template-columns: repeat(3, 80px);
+        grid-template-rows: repeat(3, 80px);
+        gap: 8px;
+      }
+      .cell {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>TikTak Game 🎮</h1>
+  <div class="board" id="board">
+    <div class="cell" data-index="0"></div>
+    <div class="cell" data-index="1"></div>
+    <div class="cell" data-index="2"></div>
+    <div class="cell" data-index="3"></div>
+    <div class="cell" data-index="4"></div>
+    <div class="cell" data-index="5"></div>
+    <div class="cell" data-index="6"></div>
+    <div class="cell" data-index="7"></div>
+    <div class="cell" data-index="8"></div>
+  </div>
+
+  <div class="status" id="status">Player X's turn</div>
+  <button id="reset">Restart Game</button>
+
+  <script>
+    const cells = document.querySelectorAll('.cell');
+    const statusText = document.getElementById('status');
+    const resetBtn = document.getElementById('reset');
+    let currentPlayer = 'X';
+    let board = ['', '', '', '', '', '', '', '', ''];
+    let running = true;
+
+    const winPatterns = [
+      [0,1,2],
+      [3,4,5],
+      [6,7,8],
+      [0,3,6],
+      [1,4,7],
+      [2,5,8],
+      [0,4,8],
+      [2,4,6]
+    ];
+
+    function handleClick() {
+      const index = this.dataset.index;
+      if (board[index] !== '' || !running) return;
+
+      board[index] = currentPlayer;
+      this.textContent = currentPlayer;
+      checkWinner();
+    }
+
+    function checkWinner() {
+      let roundWon = false;
+
+      for (let i = 0; i < winPatterns.length; i++) {
+        const [a, b, c] = winPatterns[i];
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+          roundWon = true;
+          break;
+        }
+      }
+
+      if (roundWon) {
+        statusText.textContent = `🎉 Player ${currentPlayer} Wins!`;
+        running = false;
+      } else if (!board.includes('')) {
+        statusText.textContent = "It's a Draw!";
+        running = false;
+      } else {
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        statusText.textContent = `Player ${currentPlayer}'s turn`;
+      }
+    }
+
+    function restartGame() {
+      currentPlayer = 'X';
+      board = ['', '', '', '', '', '', '', '', ''];
+      running = true;
+      statusText.textContent = `Player X's turn`;
+      cells.forEach(cell => cell.textContent = '');
+    }
+
+    cells.forEach(cell => cell.addEventListener('click', handleClick));
+    resetBtn.addEventListener('click', restartGame);
+  </script>
+</body>
+</html>
